@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>{{ contact_info.name }}'s Resume</title>
+    <style>
+        body {
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f8f8f8;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 850px;
+            margin: 20px auto;
+            padding: 30px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            box-shadow: 0 0 10px rgba(0,0,0,0.05);
+        }
+        h1, h2, h3 {
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 5px;
+            margin-top: 20px;
+            margin-bottom: 15px;
+        }
+        h1 {
+            text-align: center;
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+        .contact-info {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 0.9em;
+            color: #555;
+        }
+        .contact-info a {
+            color: #3498db;
+            text-decoration: none;
+        }
+        .section-title {
+            font-size: 1.5em;
+        }
+        .job {
+            margin-bottom: 15px;
+        }
+        .job-title {
+            font-size: 1.1em;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+        }
+        .job-title .company {
+            color: #3498db;
+        }
+        ul {
+            padding-left: 20px;
+            list-style-type: disc;
+        }
+        li {
+            margin-bottom: 5px;
+        }
+        .skills-section {
+            margin-top: 20px;
+        }
+        .skills-category {
+            font-weight: bold;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>{{ contact_info.name }}</h1>
+        <div class="contact-info">
+            {{ contact_info.email }} | {{ contact_info.phone }} | 
+            <a href="https://{{ contact_info.linkedin }}">{{ contact_info.linkedin }}</a> | 
+            <a href="https://{{ contact_info.github }}">{{ contact_info.github }}</a>
+        </div>
+
+        <p>{{ tailored_content.professional_summary }}</p>
+
+        <h2 class="section-title">Work Experience</h2>
+        {% for job in tailored_content.selected_experience %}
+        <div class="job">
+            <div class="job-title">
+                <span>{{ job.role }} - <span class="company">{{ job.company }}</span></span>
+                <span>{{ job.dates }}</span>
+            </div>
+            <ul>
+                {% for point in job.rewritten_bullet_points %}
+                <li>{{ point }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endfor %}
+
+        <h2 class="section-title">Skills</h2>
+        <div class="skills-section">
+            {% for category, skills_list in tailored_content.relevant_skills.items() %}
+                <p><span class="skills-category">{{ category.replace('_', ' ')|title }}:</span> {{ skills_list|join(', ') }}</p>
+            {% endfor %}
+        </div>
+
+        <h2 class="section-title">Projects</h2>
+        {% for project in tailored_content.selected_projects %}
+        <div class="project">
+            <div class="project-title">
+                <strong>{{ project.name }}</strong>
+                {% if project.link %}- <a href="https://{{ project.link }}">{{ project.link }}</a>{% endif %}
+            </div>
+            <p>{{ project.rewritten_description }}</p>
+        </div>
+        {% endfor %}
+
+    </div>
+</body>
+</html>

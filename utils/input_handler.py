@@ -1,4 +1,6 @@
+from datetime import datetime
 from pathlib import Path
+import shutil
 import requests
 from bs4 import BeautifulSoup
 from dotenv import load_dotenv
@@ -9,6 +11,40 @@ import time
 
 env_path = Path(__file__).parent.parent / '.env' 
 load_dotenv(dotenv_path=env_path)
+
+
+
+def get_daily_session_path() -> Path:
+    today_str = datetime.now().strftime("%Y-%m-%d")
+    base_dir = Path(".linkedin")
+    session_dir = base_dir / f"session_{today_str}"
+
+    # Ensure both base_dir and session_dir exist
+    session_dir.mkdir(parents=True, exist_ok=True)
+
+    return session_dir
+
+def clear_old_sessions():
+    base_dir = Path(".linkedin")
+    today_session = get_daily_session_path()
+
+    if not base_dir.exists():
+        return
+
+    for session_path in base_dir.glob("session_*"):
+        if session_path != today_session and session_path.is_dir():
+            print(f"Deleting old session: {session_path}")
+            shutil.rmtree(session_path)
+
+def login_and_scrape(url: str):
+    session_path = get_daily_session_path()
+    clear_old_sessions()  # Clean up old sessions
+
+    with sync_playwright() as p:
+        browser = p.chromium.launch_persistent_context(
+            user_data_dir=str(session_path),
+            headless=False,
+        )
 
 def get_job_description_text(source_type: str, source_value: str) -> str:
     """
@@ -62,38 +98,53 @@ def get_job_description_text(source_type: str, source_value: str) -> str:
         # In utils/input_handler.py -> get_job_description_text -> elif source_type == 'url'
 
         try:
+            session_path = get_daily_session_path()
+            clear_old_sessions()  # Clean up old sessions
+
             with sync_playwright() as p:
-                browser = p.chromium.launch(headless=False)
+                browser = p.chromium.launch_persistent_context(
+                    user_data_dir=str(session_path),
+                    headless=False,
+                )
                 page = browser.new_page()
                 page.goto('https://www.linkedin.com/login', timeout=60000)
 
-                # --- APPLYING THE FIX ---
-                print("Waiting for login form to be ready...")
+                print("Checking if already logged in...")
+                try:
+                    # If this element appears, the user is already logged in
+                    page.wait_for_selector('input.search-global-typeahead__input', timeout=10000)
+                    print("Session valid. Already logged in.")
+                except:
+                    print("Session not valid or login required. Proceeding with login...")  
                 
-                # Use the new ID for the email/username field
-                email_field_selector = 'input#username' # <-- CHANGED
-                page.wait_for_selector(email_field_selector, timeout=30000)
+                    page.goto('https://www.linkedin.com/login', timeout=60000)
+                    # --- APPLYING THE FIX ---
+                    print("Waiting for login form to be ready...")
+                    
+                    # Use the new ID for the email/username field
+                    email_field_selector = 'input#username' # <-- CHANGED
+                    page.wait_for_selector(email_field_selector, timeout=30000)
 
-                print("Filling email...")
-                page.fill(email_field_selector, email)
+                    print("Filling email...")
+                    page.fill(email_field_selector, email)
 
-                # Use the new ID for the password field
-                password_field_selector = 'input#password' # <-- CHANGED
-                page.wait_for_selector(password_field_selector, timeout=30000)
+                    # Use the new ID for the password field
+                    password_field_selector = 'input#password' # <-- CHANGED
+                    page.wait_for_selector(password_field_selector, timeout=30000)
 
-                print("Filling password...")
-                page.fill(password_field_selector, password)
-                # --- END OF FIX ---
+                    print("Filling password...")
+                    page.fill(password_field_selector, password)
+                    # --- END OF FIX ---
 
-                print("Signing in...")
-                # The submit button selector is usually stable, so we leave it.
-                page.click('button[data-litms-control-urn="login-submit"]') # Using a more specific button selector
-                
-                print("Waiting for login confirmation (main search bar)...")
-                # We are replacing the old selector with a more reliable one.
-                login_confirmation_selector = 'input.search-global-typeahead__input' # <-- CHANGED
-                page.wait_for_selector(login_confirmation_selector, timeout=60000)
-                print("Login successful!")
+                    print("Signing in...")
+                    # The submit button selector is usually stable, so we leave it.
+                    page.click('button[data-litms-control-urn="login-submit"]') # Using a more specific button selector
+                    
+                    print("Waiting for login confirmation (main search bar)...")
+                    # We are replacing the old selector with a more reliable one.
+                    login_confirmation_selector = 'input.search-global-typeahead__input' # <-- CHANGED
+                    page.wait_for_selector(login_confirmation_selector, timeout=60000)
+                    print("Login successful!")
 
                 print(f"Navigating to job URL: {source_value}")
                 page.goto(source_value, timeout=60000)

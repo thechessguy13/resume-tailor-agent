@@ -16,3 +16,4 @@ Jinja2
 WeasyPrint
 
 playwright
+python-docx
