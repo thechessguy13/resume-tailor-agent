@@ -49,14 +49,14 @@ def select_and_tailor_content(job_analysis: JobAnalysis, master_profile: Dict) -
     ```
 
     **Your Instructions:**
-    1.  **Professional Summary:** Write a new, 2-3 sentence professional summary. It must be highly specific, incorporating the `job_title` from the analysis and highlighting the user's most relevant skills and experience from their profile.
+    1.  **Professional Summary:** rite a new, 2-3 sentence professional summary. This summary must be a truthful reflection of the user's skills and experiences as detailed in their Master Profile. It should be highly specific to the target `job_title` from the job analysis, but **do not mention the hiring company's name**. Focus on highlighting the user's most relevant skills and top achievements from their profile without inventing any information. 
     
     2.  **Work Experience:** This is the most critical step. Select the most relevant work experiences from the master profile. For EACH selected experience, review its list of `accomplishments`.
         - For each `accomplishment` that aligns with the job analysis, you must **SYNTHESIZE a new, single resume bullet point**.
         - Combine the `project_name`, `my_responsibilities`, and especially the `impact` into a concise, powerful bullet point starting with an action verb.
         - Weave in keywords from the job analysis's `key_skills` and `core_responsibilities`, and mention technologies from `technologies_used`.
         - **Example Synthesis:** If an accomplishment is `project_name: 'AI Sales Assistant'`, `my_responsibilities: ['Developed semantic parser']`, and `impact: 'Empowered leadership'`, a good tailored bullet point would be: "Developed an AI-powered Sales Assistant, engineering a semantic parser to translate natural language into SQL, empowering leadership across the US & EU with real-time data insights."
-        - Generate 2-4 of these synthesized bullet points for each selected job. The final output must be a list of strings in the `rewritten_bullet_points` field.
+        - Generate as many relevant of these synthesized bullet points for each selected job. The final output must be a list of strings in the `rewritten_bullet_points` field.
 
     3.  **Projects:** Select the 1-2 most relevant projects. For each, rewrite the `bullet_points` and `description` to highlight technologies and outcomes relevant to the target job. If a link is not present in the master profile, return null for the link field.
     

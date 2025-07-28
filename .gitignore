@@ -19,3 +19,5 @@ __pycache__/
 generate_report.py
 *.txt
 *.docx
+
+master_profile.json
