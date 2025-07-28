@@ -17,3 +17,4 @@ WeasyPrint
 
 playwright
 python-docx
+langchain-google-genai

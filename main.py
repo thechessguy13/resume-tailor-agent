@@ -1,22 +1,27 @@
 import json
+import os 
 from utils.input_handler import get_job_description_text
 from agents.job_analyzer_agent import analyze_job_description
 from agents.content_selector_agent import select_and_tailor_content
-from agents.resume_generator_agent import generate_resume_docx, generate_resume_from_template_docx
+from agents.resume_generator_agent import generate_resume_docx
+from utils.profile_generator import create_master_profile_from_pdf
 
 # --- Main Execution Block ---
 if __name__ == '__main__':
     # --- CONTROL PANEL ---
-    # To use your own template, provide the path here. e.g., "my_resume_template.docx"
-    # To use the default generator, set this to None.
-    USER_TEMPLATE_PATH = None
+    PROFILE_SOURCE_FOLDER = "profile_source" 
 
     # --- Job Input ---
-    # You can change these values to test different inputs.
     source_type = 'url'
-    source_value = "https://www.linkedin.com/jobs/collections/recommended/?currentJobId=4272093518" # Replace with a fresh, valid job URL
+    # Replace with a fresh, valid job URL for testing
+    source_value = "https://www.linkedin.com/jobs/collections/recommended/?currentJobId=4276090169" 
 
     try:
+        # --- Check for master_profile.json and generate if needed ---
+        os.makedirs(PROFILE_SOURCE_FOLDER, exist_ok=True) 
+        if not os.path.exists('master_profile.json'):
+            create_master_profile_from_pdf(source_folder=PROFILE_SOURCE_FOLDER)
+        
         # --- PREP: Load Master Profile ---
         print("--- Step 0: Loading Master Profile ---")
         with open('master_profile.json', 'r') as f:
@@ -38,20 +43,15 @@ if __name__ == '__main__':
         print("--- Content Tailoring Complete! ---")
         print(tailored_content.model_dump_json(indent=2))
         
-        # --- PHASE 4: Dual-Path Resume Generation ---
+        # --- PHASE 4: Simplified Resume Generation ---
         print("\n--- Step 4: Generating Final Resume ---")
         
-        if USER_TEMPLATE_PATH:
-            final_resume_path = generate_resume_from_template_docx(
-                tailored_content=tailored_content,
-                contact_info=master_profile_data['contact_info'],
-                template_path=USER_TEMPLATE_PATH
-            )
-        else:
-            final_resume_path = generate_resume_docx(
-                tailored_content=tailored_content,
-                contact_info=master_profile_data['contact_info']
-            )
+        # Pass the structured_analysis object to the generator
+        final_resume_path = generate_resume_docx(
+            tailored_content=tailored_content,
+            contact_info=master_profile_data['contact_info'],
+            job_analysis=structured_analysis 
+        )
         
         print(f"\n\n>>> ALL DONE! Your resume is ready at: {final_resume_path} <<<")
 

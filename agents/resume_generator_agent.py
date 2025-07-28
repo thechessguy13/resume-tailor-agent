@@ -1,10 +1,12 @@
 import os
+from datetime import datetime # Added for date formatting
 from docx import Document
 from docx.shared import Pt, Inches, RGBColor
 from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.oxml.ns import qn
 from docx.oxml import OxmlElement
 from .content_selector_agent import TailoredResumeContent
+from .job_analyzer_agent import JobAnalysis # Added to get job analysis data
 from typing import Dict
 
 def add_bottom_border_to_paragraph(paragraph):
@@ -24,10 +26,11 @@ def add_bottom_border_to_paragraph(paragraph):
     pBdr.append(bottom)
     pPr.append(pBdr)
 
-# --- Default Generator (Final Professional Version with all fixes) ---
+# --- Default Generator (Now the ONLY generator) ---
 def generate_resume_docx(
     tailored_content: TailoredResumeContent,
     contact_info: Dict,
+    job_analysis: JobAnalysis, # Added to get target company name
     output_folder: str = "output"
 ) -> str:
     print("Generating .docx resume using XML-derived styling...")
@@ -104,83 +107,46 @@ def generate_resume_docx(
     if tailored_content.education:
         add_section_heading('EDUCATION')
         for edu in tailored_content.education:
-            # Institution line
             p_inst = doc.add_paragraph()
             p_inst.paragraph_format.space_before = Pt(6)
-            p_inst.paragraph_format.space_after = Pt(0) # <-- FIX: Tighten space
+            p_inst.paragraph_format.space_after = Pt(0)
             p_inst.add_run(edu['institution']).bold = True
             p_inst.paragraph_format.tab_stops.add_tab_stop(Inches(7.0), alignment=WD_ALIGN_PARAGRAPH.RIGHT)
             run_edu_date = p_inst.add_run('\t' + edu['dates'])
             run_edu_date.bold = True
             
-            # Degree line
             p_degree = doc.add_paragraph()
-            p_degree.paragraph_format.space_after = Pt(0) # <-- FIX: Tighten space
+            p_degree.paragraph_format.space_after = Pt(0)
             p_degree.add_run(edu['degree']).italic = True
             if edu.get('gpa'): p_degree.add_run(f" (GPA: {edu.get('gpa')})")
             
-            # Courses line (optional)
             if edu.get('relevant_courses'):
                 p_courses = doc.add_paragraph()
-                p_courses.paragraph_format.space_after = Pt(8) # <-- FIX: Space after entire entry
+                p_courses.paragraph_format.space_after = Pt(8)
                 p_courses.add_run("Relevant Courses: ").bold = True
                 p_courses.add_run(', '.join(edu['relevant_courses']))
             else:
-                # If no courses, add space after the degree line instead
                 p_degree.paragraph_format.space_after = Pt(8)
 
-    if tailored_content.accomplishments:
-        add_section_heading('ACCOMPLISHMENTS')
-        for acc in tailored_content.accomplishments:
+    if tailored_content.accomplishments_and_awards:
+        add_section_heading('ACCOMPLISHMENTS & AWARDS')
+        for acc in tailored_content.accomplishments_and_awards:
             doc.add_paragraph(acc, style='List Bullet')
 
-    company_name = tailored_content.selected_experience[0].company.replace(' ', '_').replace('/', '_')
-    output_filename = f"Resume_For_{company_name}.docx"
+    # --- CORRECTED FILENAME LOGIC ---
+    # Get the company name directly from the job analysis object.
+    company_name = job_analysis.company
+    
+    # Sanitize the company name for use in a filename.
+    sanitized_company_name = company_name.lower().replace(' ', '-').replace('/', '-')
+    
+    # Get today's date in YYYY-MM-DD format.
+    today_str = datetime.now().strftime("%Y-%m-%d")
+
+    # Create the new, correct filename.
+    output_filename = f"resume-{sanitized_company_name}-{today_str}.docx"
     output_path = os.path.join(output_folder, output_filename)
+    
     doc.save(output_path)
     print(f"Successfully generated resume: {output_path}")
-    return output_path
-
-# --- Template-based Generator (Unchanged) ---
-def find_and_replace(paragraph, placeholder, replacement_text):
-    if placeholder in paragraph.text:
-        for run in paragraph.runs:
-            if placeholder in run.text:
-                run.text = run.text.replace(placeholder, str(replacement_text))
-def replace_list_placeholder(doc, placeholder, replacement_list):
-    for p in doc.paragraphs:
-        if p.text.strip() == placeholder:
-            style = p.style
-            for item in reversed(replacement_list):
-                new_p = doc.add_paragraph(str(item), style=style)
-                p._p.addprevious(new_p._p)
-            p._element.getparent().remove(p._element)
-            return True
-    return False
-def generate_resume_from_template_docx(
-    tailored_content: TailoredResumeContent,
-    contact_info: Dict,
-    template_path: str,
-    output_folder: str = "output"
-) -> str:
-    print(f"Generating .docx resume from template: {template_path}")
-    if not os.path.exists(template_path):
-        raise FileNotFoundError(f"Template file not found at: {template_path}")
-    doc = Document(template_path)
-    contact_replacements = {'{{email}}': contact_info.get('email', ''),'{{phone}}': contact_info.get('phone', ''),'{{linkedin}}': contact_info.get('linkedin', ''),'{{github}}': contact_info.get('github', '')}
-    text_replacements = {'{{professional_summary}}': tailored_content.professional_summary,'{{skills}}': ' • '.join([f"{cat.replace('_', ' ').title()}: {', '.join(skills)}" for cat, skills in tailored_content.relevant_skills.items()]),'{{education}}': ' | '.join([f"{edu['degree']} from {edu['institution']} ({edu['dates']})" for edu in tailored_content.education])}
-    text_replacements.update(contact_replacements)
-    for p in doc.paragraphs:
-        for key, value in text_replacements.items():
-            find_and_replace(p, key, value)
-    replace_list_placeholder(doc, '{{accomplishments}}', tailored_content.accomplishments)
-    for i, job in enumerate(tailored_content.selected_experience):
-        replace_list_placeholder(doc, f'{{{{experience_{i}_bullets}}}}', job.rewritten_bullet_points)
-    if not os.path.exists(output_folder):
-        os.makedirs(output_folder)
-    company_name = tailored_content.selected_experience[0].company.replace(' ', '_').replace('/', '_')
-    output_filename = f"Resume_For_{company_name}_From_Template.docx"
-    output_path = os.path.join(output_folder, output_filename)
-    doc.save(output_path)
-    print(f"Successfully generated resume from template: {output_path}")
     return output_path
