@@ -1,0 +1,95 @@
+{
+  "contact_info": {
+    "name": "Ronak Patil",
+    "email": "ron.ptl13@gmail.com",
+    "phone": "+91 9987043049",
+    "linkedin": "linkedin.com/in/yourprofile",
+    "github": null
+  },
+  "professional_summary": "Results-driven Data Scientist with nearly 4 years of experience translating complex business challenges into high-value AI/ML solutions. Directly contributing over $180k USD (~₹1.5 Crores) in annual savings and achieving significant operational efficiencies through intelligent automation and process optimization across global initiatives (Europe, US, ME, and India). Seeking to leverage this track record of delivering tangible business value in a challenging, growth-oriented environment.",
+  "skills": {
+    "programming_languages": [
+      "Python",
+      "R",
+      "Julia",
+      "SQL"
+    ],
+    "technologies": [
+      "Scikit-learn",
+      "Pandas",
+      "NumPy",
+      "Matplotlib",
+      "Plotly",
+      "Streamlit",
+      "FastAPI",
+      "ORTools",
+      "LangChain",
+      "PostgreSQL (including pgvector extension)",
+      "AWS (S3, EC2, Redshift, Lambda, Bedrock)",
+      "Power BI",
+      "Excel",
+      "Seaborn",
+      "pgvector",
+      "FAISS",
+      "Docker",
+      "Git"
+    ],
+    "methodologies": [
+      "Supervised & Unsupervised Learning",
+      "Classification",
+      "Statistical Modelling",
+      "Time Series Forecasting",
+      "Natural Language Processing (NLP)",
+      "Large Language Models (LLMs)",
+      "Generative AI",
+      "Vector Databases",
+      "Prompt Engineering",
+      "Operations Research"
+    ]
+  },
+  "work_experience": [
+    {
+      "company": "ECU Worldwide",
+      "role": "Data Scientist – II",
+      "dates": "Oct 2021 - Present",
+      "location": "Mumbai",
+      "bullet_points": [
+        "Architected and led the development of an end-to-end automated quotation system (AQUA - GenAI), using LLMs and vector search for global deployment.",
+        "Designed and developed a Gen-AI powered sales assistant (Sara) with a semantic parser and SQL generator to provide data-driven insights for leadership across the UK, Belgium, Dubai, and the US.",
+        "Developed a manpower forecasting system using ARIMAX, achieving over 95% accuracy and resulting in annual cost savings of 1 crore ($120k USD).",
+        "Led development of a collections forecasting and customer prioritization engine, resulting in a 5-day reduction in Days Sales Outstanding (DSO) during the POC.",
+        "Championed a customer-centric churn model and retention initiative, with an anticipated annual impact of ₹1.5 crores ($181k USD).",
+        "Led the development of a line haul network optimization algorithm, resulting in ₹86 lakhs ($104k USD) in cost savings and a simplified network architecture.",
+        "Developed a customer segmentation process for micro-pricing, with a POC demonstrating an annual impact of ₹14 lakhs ($17k USD).",
+        "Drove additional data science initiatives including web scraping for lead generation, dynamic price scoring, and geospatial analysis for bin mapping optimization."
+      ]
+    }
+  ],
+  "projects": [],
+  "education": [
+    {
+      "institution": "Texas A & M University, College Station, U.S.A.",
+      "degree": "Master of Engineering in Mechanical Engineering",
+      "dates": "May 2020",
+      "gpa": "3.8/4.0"
+    },
+    {
+      "institution": "K. J. Somaiya College of Engineering, Mumbai, India",
+      "degree": "Bachelor of Technology in Mechanical Engineering with Distinction",
+      "dates": "June 2018",
+      "gpa": "9.26/10"
+    },
+    {
+      "institution": "V. G. Vaze College of Arts, Commerce and Science, Mumbai, India",
+      "degree": "Higher Secondary Certificate Examination with Distinction",
+      "dates": "Feb 2014",
+      "gpa": "88.46%"
+    },
+    {
+      "institution": "St. Pius X High School, Mumbai, India",
+      "degree": "Secondary School Certificate Examination with Distinction",
+      "dates": "Mar 2012",
+      "gpa": "91.82%"
+    }
+  ]
+}

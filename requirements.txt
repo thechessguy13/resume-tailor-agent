@@ -1,0 +1,18 @@
+# Core LLM and Agentic Framework
+langchain
+langgraph
+langchain-openai
+
+# Environment variable management
+python-dotenv
+
+# Web and File Parsing
+requests
+beautifulsoup4
+pypdf
+
+# Resume Templating and Generation
+Jinja2
+WeasyPrint
+
+playwright
