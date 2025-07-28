@@ -15,7 +15,7 @@ if __name__ == '__main__':
     # --- Job Input ---
     source_type = 'url'
     # Replace with a fresh, valid job URL for testing
-    source_value = "https://www.linkedin.com/jobs/collections/recommended/?currentJobId=4145638803" 
+    source_value = "https://www.linkedin.com/jobs/collections/recommended/?currentJobId=4263346390&start=24" 
 
     try:
         # --- Check for master_profile.json and generate if needed ---

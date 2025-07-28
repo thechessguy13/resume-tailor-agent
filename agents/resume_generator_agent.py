@@ -118,7 +118,7 @@ def generate_resume_docx(
             p_degree = doc.add_paragraph()
             p_degree.paragraph_format.space_after = Pt(0)
             p_degree.add_run(edu['degree']).italic = True
-            if edu.get('gpa'): p_degree.add_run(f" (GPA: {edu.get('gpa')})")
+            if edu.get('gpa'): p_degree.add_run(f" ({edu.get('gpa')})")
             
             if edu.get('relevant_courses'):
                 p_courses = doc.add_paragraph()
